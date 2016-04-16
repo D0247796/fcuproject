@@ -81,7 +81,7 @@ public class Main2Activity extends AppCompatActivity {
 
         };
         sw_voice.setOnCheckedChangeListener(sw_voice_CCL);
-        //ImageView_view.setImageResource(R.drawable.th);
+        // 更改警告ImageView_view.setImageResource(R.drawable.th);
 
     }
 
