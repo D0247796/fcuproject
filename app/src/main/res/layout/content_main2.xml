@@ -14,35 +14,39 @@
 
 
     <FrameLayout
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:id="@+id/frameLayout">
+        android:id="@+id/frameLayout"
+        android:layout_toStartOf="@+id/linearLayout">
 
         <ImageView
-            android:layout_width="400dp"
-            android:layout_height="100dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:id="@+id/View"
 
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:src="@drawable/th"/>
+
+
     </FrameLayout>
 
     <GridLayout
         android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_height="200dp"
         android:id="@+id/gridLayout"
+
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/frameLayout">
+        android:layout_below="@+id/frameLayout"
+        android:layout_alignParentBottom="true">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="上"
-            android:id="@+id/button"
+            android:id="@+id/bt_top"
             android:layout_row="0"
             android:layout_column="1"
             android:layout_columnSpan="1"
@@ -52,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="左"
-            android:id="@+id/button2"
+            android:id="@+id/bt_left"
             android:layout_row="1"
             android:layout_column="0"
             android:layout_columnWeight="1"
@@ -61,22 +65,21 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="右"
-            android:id="@+id/button3"
+            android:text="下"
+            android:id="@+id/bt_do"
             android:layout_row="1"
-            android:layout_column="2"
-            android:layout_columnWeight="1"
-            android:layout_columnSpan="1" />
+            android:layout_column="1"
+            android:layout_columnWeight="1" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="下"
-            android:id="@+id/button4"
-            android:layout_row="2"
-            android:layout_column="1"
-            android:layout_columnSpan="1"
-            android:layout_columnWeight="1" />
+            android:text="右"
+            android:id="@+id/bt_right"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:layout_columnSpan="1" />
 
     </GridLayout>
 
@@ -84,51 +87,67 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/frameLayout"
         android:layout_toEndOf="@+id/gridLayout"
-        android:layout_marginStart="33dp"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/gridLayout">
 
         <Switch
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="影像"
-            android:id="@+id/switchImage"
+            android:id="@+id/sw_Image"
             android:layout_marginBottom="22dp"
             android:layout_alignBottom="@+id/View"
-            android:layout_alignStart="@+id/switchVoice" />
+            android:layout_alignStart="@+id/sw_Voice" />
 
         <Switch
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="聲音"
-            android:id="@+id/switchVoice"
+            android:id="@+id/sw_Voice"
 
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true" />
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/linearLayout"
-        android:layout_alignParentRight="true"
-        android:layout_alignStart="@+id/linearLayout"
-        android:layout_above="@+id/linearLayout">
+        android:layout_alignBottom="@+id/frameLayout"
+        android:layout_toEndOf="@+id/frameLayout">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="溫度"
-            android:id="@+id/textView" />
+            android:layout_height="wrap_content"
+            android:text="碰撞: "
+            android:id="@+id/textView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="濕度"
-            android:id="@+id/textView2" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:text="水位: "
+            android:id="@+id/textView2"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/fine"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:src="@drawable/fine"
+            android:layout_alignTop="@+id/textView2"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
 
 </RelativeLayout>
