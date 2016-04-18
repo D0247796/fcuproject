@@ -1,8 +1,14 @@
 package lincyu.table;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Camera.PictureCallback;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -17,17 +25,26 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-public class Main2Activity extends AppCompatActivity {
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+
+public class Main2Activity extends Activity implements SurfaceHolder.Callback {
     private ImageView ImageView_view;
     Button bt_up,bt_right,bt_left,bt_down;
     Switch sw_voice,sw_image;
-
+    SurfaceHolder surfaceHolder;
+    SurfaceView surfaceView1;
+    Button button1;
+    ImageView imageView1;
+    Camera camera;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+      //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+       // setSupportActionBar(toolbar);
         //定義專區
         ImageView_view = (ImageView) findViewById(R.id.View);
         bt_down = (Button)findViewById(R.id.bt_do);
@@ -40,6 +57,12 @@ public class Main2Activity extends AppCompatActivity {
         bt_left.setOnClickListener(bt_left_CL);
         sw_voice = (Switch)findViewById(R.id.sw_Voice);
         sw_image = (Switch)findViewById(R.id.sw_Image);
+        surfaceView1=(SurfaceView)findViewById(R.id.surfaceView);
+        surfaceHolder=surfaceView1.getHolder();
+        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        surfaceHolder.addCallback(this);
+
+
 
         //Switch設定
         CompoundButton.OnCheckedChangeListener sw_image_CCL=new CompoundButton.OnCheckedChangeListener(){
@@ -82,6 +105,47 @@ public class Main2Activity extends AppCompatActivity {
         };
         sw_voice.setOnCheckedChangeListener(sw_voice_CCL);
         // 更改警告ImageView_view.setImageResource(R.drawable.th);
+
+    }
+
+
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+        System.out.println("surfaceDestroyed");
+        camera.stopPreview();
+        //關閉預覽
+        camera.release();
+        //
+    }
+
+    //相機設定
+    public void surfaceCreated(SurfaceHolder holder) {
+
+            camera = Camera.open();
+            Toast.makeText(Main2Activity.this,"正確", Toast.LENGTH_SHORT);
+
+        try {
+
+            Camera.Parameters parameters=camera.getParameters();
+            parameters.setPictureFormat(PixelFormat.JPEG);
+            parameters.setPreviewSize(320, 220);
+           // camera.setParameters(parameters);
+            //設置參數
+            camera.setPreviewDisplay(surfaceHolder);
+            //鏡頭的方向和手機相差90度，所以要轉向
+            //camera.setDisplayOrientation(90);
+            //攝影頭畫面顯示在Surface上
+            camera.startPreview();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
 
     }
 
