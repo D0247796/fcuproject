@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,7 +46,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
     ImageView imageView1;
     Camera camera;
     //錄音變數
-    private MyRecoder myRecoder;
+    private MediaRecorder mediaRecorder = null;
+    File voice_recodeFile;
     private String fileName;
     private MediaPlayer mediaPlayer;
     @Override
@@ -70,9 +73,9 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceHolder.addCallback(this);
 
-        // 錄音讀取檔案名稱
+//        // 錄音讀取檔案名稱
         Intent intent = getIntent();
-        fileName = intent.getStringExtra("fileName");
+       fileName = intent.getStringExtra("fileName");
 
         //Switch設定
         CompoundButton.OnCheckedChangeListener sw_image_CCL=new CompoundButton.OnCheckedChangeListener(){
@@ -104,9 +107,40 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                 {
                     Toast t = Toast.makeText(Main2Activity.this,"voice open", Toast.LENGTH_SHORT);
                     t.show();
-                    myRecoder = new MyRecoder(fileName);
-                    // 開始錄音
-                    myRecoder.start();
+
+                    //錄音
+                    //設定錄音檔
+                     fileName = "record.amr";
+                    try {
+                        File SDCardpath = Environment.getExternalStorageDirectory();
+                        File myDataPath = new File( SDCardpath.getAbsolutePath() + "/download" );
+                        if( !myDataPath.exists() ) myDataPath.mkdirs();
+                        voice_recodeFile = new File(SDCardpath.getAbsolutePath() + "/download/"+fileName);
+
+                        mediaRecorder = new MediaRecorder();
+
+                        //設定音源
+                        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                        //設定輸出檔案的格式
+                        mediaRecorder
+                                .setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
+                        //設定編碼格式
+                        mediaRecorder
+                                .setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                        //設定錄音檔位置
+                        mediaRecorder
+                                .setOutputFile( voice_recodeFile.getAbsolutePath());
+
+                        mediaRecorder.prepare();
+
+                        //開始錄音
+                        mediaRecorder.start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+//
 
 
                 }
@@ -114,9 +148,17 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                 {
                     Toast t = Toast.makeText(Main2Activity.this,"voice close", Toast.LENGTH_SHORT);
                     t.show();
-                    Uri uri = Uri.parse(fileName);
-                    mediaPlayer = MediaPlayer.create(Main2Activity.this, uri);
-                    mediaPlayer.start();
+
+                    if(mediaRecorder != null) {
+                        mediaRecorder.stop();
+                        mediaRecorder.release();
+                        mediaRecorder = null;
+                        Uri uri = Uri.parse(fileName);
+                        mediaPlayer = MediaPlayer.create(Main2Activity.this, uri);
+                        mediaPlayer.start();
+
+                    }
+
 
                 }
             }
@@ -166,75 +208,6 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             e.printStackTrace();
         }
 
-    }
-    //MIC設定
-    private class MyRecoder {
-
-        private static final double EMA_FILTER = 0.6;
-        private MediaRecorder recorder = null;
-        private double mEMA = 0.0;
-        private String output;
-
-        // 建立錄音物件，參數為錄音儲存的位置與檔名
-        MyRecoder(String output) {
-            this.output = output;
-        }
-
-        // 開始錄音
-        public void start() {
-            if (recorder == null) {
-                // 建立錄音用的MediaRecorder物件
-                recorder = new MediaRecorder();
-                // 設定錄音來源為麥克風，必須在setOutputFormat方法之前呼叫
-                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                // 設定輸出格式為3GP壓縮格式，必須在setAudioSource方法之後，
-                // 在prepare方法之前呼叫
-                recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                // 設定錄音的編碼方式，必須在setOutputFormat方法之後，
-                // 在prepare方法之前呼叫
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                // 設定輸出的檔案名稱，必須在setOutputFormat方法之後，
-                // 在prepare方法之前呼叫
-                recorder.setOutputFile(output);
-
-                try {
-                    // 準備執行錄音工作，必須在所有設定之後呼叫
-                    recorder.prepare();
-                }
-                catch (IOException e) {
-                    Log.d("RecordActivity", e.toString());
-                }
-
-                // 開始錄音
-                recorder.start();
-                mEMA = 0.0;
-            }
-        }
-
-        // 停止錄音
-        public void stop() {
-            if (recorder != null) {
-                // 停止錄音
-                recorder.stop();
-                // 清除錄音資源
-                recorder.release();
-                recorder = null;
-            }
-        }
-
-        public double getAmplitude() {
-            if (recorder != null)
-                return (recorder.getMaxAmplitude() / 2700.0);
-            else
-                return 0;
-        }
-
-        // 取得麥克風音量
-        public double getAmplitudeEMA() {
-            double amp = getAmplitude();
-            mEMA = EMA_FILTER * amp + (1.0 - EMA_FILTER) * mEMA;
-            return mEMA;
-        }
     }
 
     //按鈕設定
