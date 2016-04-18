@@ -49,7 +49,6 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
     private MediaRecorder mediaRecorder = null;
     File voice_recodeFile;
     private String fileName;
-    private MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,10 +152,20 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                         mediaRecorder.stop();
                         mediaRecorder.release();
                         mediaRecorder = null;
-                        Uri uri = Uri.parse(fileName);
-                        mediaPlayer = MediaPlayer.create(Main2Activity.this, uri);
-                        mediaPlayer.start();
-
+                        File SDCardpath = Environment.getExternalStorageDirectory();
+                        Uri uri = Uri.parse( SDCardpath.getAbsolutePath() + "/download/"+fileName);//路徑
+                        MediaPlayer  mediaPlayer = MediaPlayer.create(Main2Activity.this,uri);
+                        if(mediaPlayer!=null){
+                            mediaPlayer.start();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {  //播完後釋放
+                                @Override
+                                public void onCompletion(MediaPlayer playSuccess) {
+                                    playSuccess.release();
+                                }
+                            });
+                        }else{//如果抓步道直跑這裡
+                            Toast.makeText(getBaseContext(), "錯誤",Toast.LENGTH_SHORT).show();
+                        }
                     }
 
 
