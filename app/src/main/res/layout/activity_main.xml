@@ -8,39 +8,46 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="@drawable/bround">
 
     <EditText
 
         android:id="@+id/textAccount"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:hint="請輸入帳號"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#7f00ddff" />
     <EditText
 
         android:id="@+id/textPassworld"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:hint="請輸入密碼"
         android:layout_below="@+id/textAccount"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#7f00ddff" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:text="確定連結"
         android:id="@+id/buttonConnect"
-        android:layout_centerVertical="true"
+        android:background="@drawable/buntton"
+        android:allowUndo="true"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:text="連結錯誤通知"
         android:id="@+id/textState"
         android:layout_below="@+id/textPassworld"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#7f00ddff"
+        android:layout_above="@+id/buttonConnect" />
 
 
 </RelativeLayout>
