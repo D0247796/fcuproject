@@ -26,14 +26,18 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 
 
 public class Main2Activity extends Activity implements SurfaceHolder.Callback {
@@ -44,6 +48,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
     SurfaceView surfaceView1;
     Button button1;
     ImageView imageView1;
+    EditText et_account;
     Camera camera;
     //錄音變數
     private MediaRecorder mediaRecorder = null;
@@ -71,6 +76,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         surfaceHolder=surfaceView1.getHolder();
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceHolder.addCallback(this);
+
+        et_account=(EditText)findViewById(R.id.et_account);
 
 //        // 錄音讀取檔案名稱
         Intent intent = getIntent();
@@ -226,6 +233,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         public void onClick (View v) {
             Toast t = Toast.makeText(Main2Activity.this,"UP", Toast.LENGTH_SHORT);
             t.show();
+//            SocketClientThread SocketClientThread = new SocketClientThread("UP");
+//            SocketClientThread.start();
 
         }
     };
@@ -235,6 +244,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         public void onClick (View v) {
             Toast t = Toast.makeText(Main2Activity.this,"RIGHT", Toast.LENGTH_SHORT);
             t.show();
+//            SocketClientThread SocketClientThread = new SocketClientThread("RIGHT");
+//            SocketClientThread.start();
 
         }
     };
@@ -244,6 +255,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         public void onClick (View v) {
             Toast t = Toast.makeText(Main2Activity.this,"LEFT", Toast.LENGTH_SHORT);
             t.show();
+//            SocketClientThread SocketClientThread = new SocketClientThread("LEFT");
+//            SocketClientThread.start();
 
         }
     };
@@ -253,7 +266,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         public void onClick (View v) {
             Toast t = Toast.makeText(Main2Activity.this,"DOWN", Toast.LENGTH_SHORT);
             t.show();
-
+//            SocketClientThread SocketClientThread = new SocketClientThread("DOWN");
+//            SocketClientThread.start();
         }
     };
     @Override
@@ -298,5 +312,62 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //Client端
+    private class SocketClientThread extends Thread {
+        String server_msg,msg;
+
+        public SocketClientThread(String msg){
+            this.msg=msg;
+        }
+        @Override
+        public void run() {
+            Socket s = null;
+            String ip=et_account.getText().toString();
+            DataOutputStream dout = null;
+            DataInputStream din =null;
+            try{
+                s = new Socket(ip,8888);
+                dout = new DataOutputStream(s.getOutputStream());
+                din = new DataInputStream(s.getInputStream());
+                dout.writeUTF(msg);
+                server_msg = din.readUTF(); //這是裡傳來的訊息
+                //UI更新
+                Main2Activity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+
+                    }
+                });
+
+
+
+            }
+            catch (Exception e){
+                e.getStackTrace();
+            }
+            finally {
+                try{
+                    if(dout !=null){
+                        dout.close();
+                    }
+                    if(din !=null){
+                        din.close();
+                    }
+                    if(s != null){
+                        s.close();
+                    }
+                }catch (Exception e){
+                    e.getStackTrace();
+                }
+            }
+
+
+        }
+
+
     }
 }

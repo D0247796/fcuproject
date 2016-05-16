@@ -13,19 +13,19 @@
 
     <EditText
 
-        android:id="@+id/textAccount"
+        android:id="@+id/et_account"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:hint="請輸入帳號"
+        android:hint="請輸入IP"
         android:layout_alignParentStart="true"
         android:background="#7f00ddff" />
     <EditText
 
-        android:id="@+id/textPassworld"
+        android:id="@+id/et_passworld"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:hint="請輸入密碼"
-        android:layout_below="@+id/textAccount"
+        android:layout_below="@+id/et_account"
         android:layout_alignParentStart="true"
         android:background="#7f00ddff" />
 
@@ -33,7 +33,7 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:text="確定連結"
-        android:id="@+id/buttonConnect"
+        android:id="@+id/btn_connect"
         android:background="@drawable/buntton"
         android:allowUndo="true"
         android:layout_alignParentBottom="true"
@@ -43,11 +43,27 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="連結錯誤通知"
-        android:id="@+id/textState"
-        android:layout_below="@+id/textPassworld"
+        android:id="@+id/tv_state"
+        android:layout_below="@+id/et_passworld"
         android:layout_alignParentStart="true"
         android:background="#7f00ddff"
-        android:layout_above="@+id/buttonConnect" />
+        android:layout_above="@+id/btn_connect" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="進入下一頁"
+        android:id="@+id/bt_test"
+        android:layout_below="@+id/tv_state"
+        android:layout_toStartOf="@+id/btn_connect" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IP:"
+        android:id="@+id/tv_myIP"
+        android:layout_above="@+id/btn_connect"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>

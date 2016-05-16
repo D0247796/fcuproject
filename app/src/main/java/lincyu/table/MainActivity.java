@@ -1,20 +1,28 @@
 package lincyu.table;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity {
-    Button BT_connect;
-
+    Button btn_connect,bt_test;
+    EditText et_password,et_account;
+    TextView tv_state,tv_myip;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,28 +30,53 @@ public class MainActivity extends AppCompatActivity {
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        BT_connect =(Button)findViewById(R.id.buttonConnect);
-        BT_connect.setOnClickListener(connectListener);
+        btn_connect =(Button)findViewById(R.id.btn_connect);
+        et_password=(EditText)findViewById(R.id.et_passworld);
+        et_account=(EditText)findViewById(R.id.et_account);
+        tv_state=(TextView)findViewById(R.id.tv_state);
+        tv_myip=(TextView)findViewById(R.id.tv_myIP);
+        bt_test=(Button)findViewById(R.id.bt_test);
 
+        btn_connect.setOnClickListener(connectListener);
+        bt_test.setOnClickListener(bt_test_CL);
+
+        tv_myip.setText(getIpAddress());
+
+        Thread socketServerThread = new Thread(new SocketServerThread());
+        socketServerThread.start();
+        Thread changeThread =new Thread(new changeThread());
+        changeThread.start();
 
     }
+
+    //按鈕監聽
     private View.OnClickListener connectListener = new View.OnClickListener() {
 
         @Override
         public void onClick (View v) {
+            SocketClientThread SocketClientThread = new SocketClientThread();
+            SocketClientThread.start();
+
+        }
+    };
+    private View.OnClickListener bt_test_CL = new View.OnClickListener() {
+
+        @Override
+        public void onClick (View v) {
+
             Intent intent = new Intent();
             intent.setClass(MainActivity.this, Main2Activity.class);
             startActivity(intent);
         }
     };
 
+    //菜單設定
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -68,5 +101,165 @@ public class MainActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //拿取 IP
+    private String getIpAddress() {
+        String ip = "";
+        try {
+            Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (enumNetworkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = enumNetworkInterfaces
+                        .nextElement();
+                Enumeration<InetAddress> enumInetAddress = networkInterface
+                        .getInetAddresses();
+                while (enumInetAddress.hasMoreElements()) {
+                    InetAddress inetAddress = enumInetAddress.nextElement();
+
+                    if (inetAddress.isSiteLocalAddress()) {
+                        ip += "SiteLocalAddress: "
+                                + inetAddress.getHostAddress() + "\n";
+                    }
+
+                }
+
+            }
+
+        } catch (SocketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            ip += "Something Wrong! " + e.toString() + "\n";
+        }
+
+        return ip;
+    }
+
+    //Server端
+    private class SocketServerThread extends Thread {
+        String cleint_msg;
+
+        @Override
+        public void run() {
+            ServerSocket ss =null;
+            Socket s =null;
+            DataInputStream din = null;
+            DataOutputStream dout =null;
+            try{
+                ss= new ServerSocket(8888);
+                System.out.println("以監聽8888阜");
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.out.println("出事拉1");
+            }
+            while(true){
+                try{
+                    System.out.println("測試１１１１");
+                    s=ss.accept();
+                    System.out.println("測試");
+                    din = new DataInputStream(s.getInputStream());
+                    dout = new DataOutputStream(s.getOutputStream());
+                    cleint_msg = din.readUTF(); //這是裡傳來的訊息
+                    //UI更新
+                    MainActivity.this.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            tv_state.setText(cleint_msg);
+                        }
+                    });
+
+                    dout.writeUTF("msg_sucessful");
+                }
+                catch(Exception e){
+                    System.out.println("出事拉2");
+                }
+                finally{
+                    try{
+                        System.out.println("測試222");
+                        if(dout !=null){
+                            dout.close();
+                        }
+                        if(din !=null){
+                            din.close();
+                        }
+                        if(s != null){
+                            s.close();
+                        }
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                        System.out.println("出事拉3");
+                    }
+                }
+            }
+        }
+
+    }
+
+    //Client端
+    private class SocketClientThread extends Thread {
+        String server_msg;
+        @Override
+        public void run() {
+            Socket s = null;
+            String ip=et_account.getText().toString();
+            DataOutputStream dout = null;
+            DataInputStream din =null;
+            try{
+                s = new Socket(ip,8888);
+                dout = new DataOutputStream(s.getOutputStream());
+                din = new DataInputStream(s.getInputStream());
+                dout.writeUTF("Hi,Client");
+               server_msg = din.readUTF(); //這是裡傳來的訊息
+                //UI更新
+                MainActivity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        tv_myip.setText(server_msg);
+
+                    }
+                });
+
+
+
+            }
+            catch (Exception e){
+                e.getStackTrace();
+            }
+            finally {
+                try{
+                    if(dout !=null){
+                        dout.close();
+                    }
+                    if(din !=null){
+                        din.close();
+                    }
+                    if(s != null){
+                        s.close();
+                    }
+                }catch (Exception e){
+                    e.getStackTrace();
+                }
+            }
+
+
+        }
+
+
+    }
+    private class changeThread extends Thread {
+
+        @Override
+        public void run() {
+            if(tv_myip.getText().toString() == "msg_sucessful"){
+
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Main2Activity.class);
+                startActivity(intent);
+
+            }
+        }
     }
 }
