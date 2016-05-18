@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_connect,bt_test;
     EditText et_password,et_account;
     TextView tv_state,tv_myip;
+    int connect=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Client端
     private class SocketClientThread extends Thread {
-        String server_msg;
+        String server_msg=null;
         @Override
         public void run() {
             Socket s = null;
@@ -212,12 +213,15 @@ public class MainActivity extends AppCompatActivity {
                 din = new DataInputStream(s.getInputStream());
                 dout.writeUTF("Hi,Client");
                server_msg = din.readUTF(); //這是裡傳來的訊息
+                if(server_msg!=null){
+                    connect=1;
+                }
                 //UI更新
                 MainActivity.this.runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
-                        tv_myip.setText(server_msg);
+                        tv_state.setText(server_msg);
 
                     }
                 });
@@ -253,12 +257,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            if(tv_myip.getText().toString() == "msg_sucessful"){
+            while(true) {
+                if (connect == 1) {
 
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, Main2Activity.class);
-                startActivity(intent);
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, Main2Activity.class);
+                    startActivity(intent);
+                    break;
 
+
+
+                }
             }
         }
     }
