@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     EditText et_password,et_account;
     TextView tv_state,tv_myip;
     int connect=0;
+    Thread socketServerThread;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
         tv_myip.setText(getIpAddress());
 
-        Thread socketServerThread = new Thread(new SocketServerThread());
+         socketServerThread = new Thread(new SocketServerThread());
         socketServerThread.start();
-        Thread changeThread =new Thread(new changeThread());
-        changeThread.start();
+
 
     }
 
@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         public void onClick (View v) {
             SocketClientThread SocketClientThread = new SocketClientThread();
             SocketClientThread.start();
+            //沒加的話只能一次
+            Thread changeThread =new Thread(new changeThread());
+            changeThread.start();
 
         }
     };
@@ -161,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     din = new DataInputStream(s.getInputStream());
                     dout = new DataOutputStream(s.getOutputStream());
                     cleint_msg = din.readUTF(); //這是裡傳來的訊息
+                    dout.writeUTF("MainActivityServer");
                     //UI更新
                     MainActivity.this.runOnUiThread(new Runnable() {
 
@@ -170,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    dout.writeUTF("msg_sucessful");
+
                 }
                 catch(Exception e){
                     System.out.println("出事拉2");
@@ -200,11 +204,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Client端
     private class SocketClientThread extends Thread {
-        String server_msg=null;
+        String server_msg,server2_msg=null;
         @Override
         public void run() {
             Socket s = null;
-            String ip=et_account.getText().toString();
+            String ip="";
+            ip=et_account.getText().toString();
             DataOutputStream dout = null;
             DataInputStream din =null;
             try{
@@ -213,8 +218,10 @@ public class MainActivity extends AppCompatActivity {
                 din = new DataInputStream(s.getInputStream());
                 dout.writeUTF("Hi,Client");
                server_msg = din.readUTF(); //這是裡傳來的訊息
-                if(server_msg!=null){
+                server2_msg=server_msg;
+                if(server2_msg!=null){
                     connect=1;
+                    server2_msg=null;
                 }
                 //UI更新
                 MainActivity.this.runOnUiThread(new Runnable() {
@@ -253,16 +260,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    //確認接收 轉換介面 傳遞IP
     private class changeThread extends Thread {
 
         @Override
         public void run() {
             while(true) {
                 if (connect == 1) {
-
+                    String ip = et_account.getText().toString();
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this, Main2Activity.class);
+                    intent.putExtra("IP",ip);
                     startActivity(intent);
+                    connect = 0;
                     break;
 
 

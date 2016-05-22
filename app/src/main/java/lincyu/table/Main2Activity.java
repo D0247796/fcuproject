@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 
@@ -47,9 +48,12 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
     SurfaceHolder surfaceHolder;
     SurfaceView surfaceView1;
     Button button1;
-    ImageView imageView1;
+    ImageView iv_collision,iv_water;
     EditText et_account;
     Camera camera;
+    int worng1=0,worng2=0;
+
+
     //錄音變數
     private MediaRecorder mediaRecorder = null;
     File voice_recodeFile;
@@ -61,7 +65,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
       //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
        // setSupportActionBar(toolbar);
         //定義專區
-        ImageView_view = (ImageView) findViewById(R.id.imageView);
+
         bt_down = (Button)findViewById(R.id.bt_do);
         bt_down.setOnClickListener(bt_down_CL);
         bt_up = (Button)findViewById(R.id.bt_top);
@@ -70,6 +74,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         bt_right.setOnClickListener(bt_right_CL);
         bt_left = (Button)findViewById(R.id.bt_left);
         bt_left.setOnClickListener(bt_left_CL);
+        iv_collision=(ImageView)findViewById(R.id.iv_collision);
+        iv_water=(ImageView)findViewById(R.id.iv_water);
         sw_voice = (Switch)findViewById(R.id.sw_Voice);
         sw_image = (Switch)findViewById(R.id.sw_Image);
         surfaceView1=(SurfaceView)findViewById(R.id.surfaceView);
@@ -77,11 +83,18 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceHolder.addCallback(this);
 
+
+
         et_account=(EditText)findViewById(R.id.et_account);
+        //啟動SERVER
+        Thread socketServerThread = new Thread(new SocketServerThread());
+        socketServerThread.start();
+//        Thread WorngThread =new Thread(new WorngThread());
+//        WorngThread.start();
 
 //        // 錄音讀取檔案名稱
-        Intent intent = getIntent();
-       fileName = intent.getStringExtra("fileName");
+//        Intent intent = getIntent();
+//       fileName = intent.getStringExtra("fileName");
 
         //Switch設定
         CompoundButton.OnCheckedChangeListener sw_image_CCL=new CompoundButton.OnCheckedChangeListener(){
@@ -231,10 +244,12 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
         @Override
         public void onClick (View v) {
-            Toast t = Toast.makeText(Main2Activity.this,"UP", Toast.LENGTH_SHORT);
-            t.show();
-//            SocketClientThread SocketClientThread = new SocketClientThread("UP");
-//            SocketClientThread.start();
+            Intent intent = getIntent();
+            String ip;
+            ip=intent.getStringExtra("IP");
+
+            SocketClientThread SocketClientThread = new SocketClientThread("UP",ip);
+            SocketClientThread.start();
 
         }
     };
@@ -242,10 +257,13 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
         @Override
         public void onClick (View v) {
-            Toast t = Toast.makeText(Main2Activity.this,"RIGHT", Toast.LENGTH_SHORT);
-            t.show();
-//            SocketClientThread SocketClientThread = new SocketClientThread("RIGHT");
-//            SocketClientThread.start();
+//            Toast t = Toast.makeText(Main2Activity.this,"RIGHT", Toast.LENGTH_SHORT);
+//            t.show();
+            Intent intent = getIntent();
+            String ip;
+            ip=intent.getStringExtra("IP");
+            SocketClientThread SocketClientThread = new SocketClientThread("RIGHT",ip);
+            SocketClientThread.start();
 
         }
     };
@@ -253,10 +271,13 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
         @Override
         public void onClick (View v) {
-            Toast t = Toast.makeText(Main2Activity.this,"LEFT", Toast.LENGTH_SHORT);
-            t.show();
-//            SocketClientThread SocketClientThread = new SocketClientThread("LEFT");
-//            SocketClientThread.start();
+//            Toast t = Toast.makeText(Main2Activity.this,"LEFT", Toast.LENGTH_SHORT);
+//            t.show();
+            Intent intent = getIntent();
+            String ip;
+            ip=intent.getStringExtra("IP");
+            SocketClientThread SocketClientThread = new SocketClientThread("LEFT",ip);
+            SocketClientThread.start();
 
         }
     };
@@ -264,10 +285,13 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
         @Override
         public void onClick (View v) {
-            Toast t = Toast.makeText(Main2Activity.this,"DOWN", Toast.LENGTH_SHORT);
-            t.show();
-//            SocketClientThread SocketClientThread = new SocketClientThread("DOWN");
-//            SocketClientThread.start();
+//            Toast t = Toast.makeText(Main2Activity.this,"DOWN", Toast.LENGTH_SHORT);
+//            t.show();
+            Intent intent = getIntent();
+            String ip;
+            ip=intent.getStringExtra("IP");
+            SocketClientThread SocketClientThread = new SocketClientThread("DOWN",ip);
+            SocketClientThread.start();
         }
     };
     @Override
@@ -313,18 +337,103 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
         return super.onOptionsItemSelected(item);
     }
+    //Server端
+    private class SocketServerThread extends Thread {
+       int cleint_msg=0;
+
+        @Override
+        public void run() {
+            ServerSocket ss =null;
+            Socket s =null;
+            DataInputStream din = null;
+            DataOutputStream dout =null;
+            try{
+                ss= new ServerSocket(8880);
+                System.out.println("以監聽8888阜");
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.out.println("出事拉1");
+            }
+            while(true){
+                try{
+                    System.out.println("測試１１１１");
+                    s=ss.accept();
+                    System.out.println("測試");
+                    din = new DataInputStream(s.getInputStream());
+                    dout = new DataOutputStream(s.getOutputStream());
+                    cleint_msg = din.readInt(); //這是裡傳來的訊息
+
+                    Main2Activity.this.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+
+                            if (cleint_msg ==1){
+                                iv_collision.setImageResource(R.drawable.error);
+
+                            }
+                            if (cleint_msg ==2){
+
+                                iv_water.setImageResource(R.drawable.error);
+
+                            }
+                            if (cleint_msg ==3){
+                                iv_collision.setImageResource(R.drawable.fine);
+
+                            }
+                            if (cleint_msg ==4){
+                                iv_water.setImageResource(R.drawable.fine);
+
+                            }
+                        }
+                    });
+
+
+
+
+
+
+                    dout.writeUTF("Ｍain2Server");
+                }
+                catch(Exception e){
+                    System.out.println("出事拉2");
+                }
+                finally{
+                    try{
+                        System.out.println("測試222");
+                        if(dout !=null){
+                            dout.close();
+                        }
+                        if(din !=null){
+                            din.close();
+                        }
+                        if(s != null){
+                            s.close();
+                        }
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                        System.out.println("出事拉3");
+                    }
+                }
+            }
+        }
+
+    }
 
     //Client端
     private class SocketClientThread extends Thread {
-        String server_msg,msg;
+        String server_msg,msg,ip;
 
-        public SocketClientThread(String msg){
+        public SocketClientThread(String msg,String ip){
             this.msg=msg;
+            this.ip=ip;
         }
         @Override
         public void run() {
             Socket s = null;
-            String ip=et_account.getText().toString();
             DataOutputStream dout = null;
             DataInputStream din =null;
             try{
@@ -332,6 +441,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                 dout = new DataOutputStream(s.getOutputStream());
                 din = new DataInputStream(s.getInputStream());
                 dout.writeUTF(msg);
+//                Toast t = Toast.makeText(Main2Activity.this,msg, Toast.LENGTH_SHORT);
+//                t.show();
                 server_msg = din.readUTF(); //這是裡傳來的訊息
                 //UI更新
                 Main2Activity.this.runOnUiThread(new Runnable() {
@@ -370,4 +481,60 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
 
     }
+//    private class WorngThread extends Thread {
+//
+//        @Override
+//        public void run() {
+//            while(true) {
+//
+//                if (worng1 == 1){
+//                    //UI更新
+//                    Main2Activity.this.runOnUiThread(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            iv_collision.setImageResource(R.drawable.error);
+//
+//                        }
+//                    });
+//
+//
+//                }
+//                if (worng2 == 1){
+//                    Main2Activity.this.runOnUiThread(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            iv_water.setImageResource(R.drawable.error);
+//
+//                        }
+//                    });
+//
+//                }
+//                if (worng1 ==0 ){
+//                    Main2Activity.this.runOnUiThread(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            iv_collision.setImageResource(R.drawable.fine);
+//
+//                        }
+//                    });
+//
+//                }
+//                if (worng2 == 0){
+//                    Main2Activity.this.runOnUiThread(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            iv_water.setImageResource(R.drawable.fine);
+//
+//                        }
+//                    });
+//
+//
+//                }
+//            }
+//        }
+//    }
 }
