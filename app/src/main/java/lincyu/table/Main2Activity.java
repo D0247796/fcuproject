@@ -370,6 +370,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                         public void run() {
 
 
+
                             if (cleint_msg ==1){
                                 iv_collision.setImageResource(R.drawable.error);
 
