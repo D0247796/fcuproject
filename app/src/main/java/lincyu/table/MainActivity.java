@@ -254,9 +254,9 @@ public class MainActivity extends AppCompatActivity {
                     e.getStackTrace();
                 }
             }
-
-
+            
         }
+
     }
     //確認接收 轉換介面 傳遞IP
     private class changeThread extends Thread {
