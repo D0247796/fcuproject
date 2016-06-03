@@ -37,6 +37,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -89,6 +92,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         //啟動SERVER
         Thread socketServerThread = new Thread(new SocketServerThread());
         socketServerThread.start();
+        Thread UDP_Server = new Thread(new UDP_Server());
+        UDP_Server.start();
 //        Thread WorngThread =new Thread(new WorngThread());
 //        WorngThread.start();
 
@@ -481,6 +486,56 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         }
 
 
+    }
+    //UDP
+    public class UDP_Server extends Thread{
+        public void run(){
+            int		port = 8080;
+            byte []	buf = new byte[1000];
+            byte []	buf2 = new byte[1000];
+
+            try {
+                // Construct a datagram socket and bind it to the specified port
+                DatagramSocket socket = new DatagramSocket(port);
+
+                System.out.println("Waiting on port : " + port);
+
+                // Construct a DatagramPacket for receiving packets
+                DatagramPacket recPacket = new DatagramPacket(buf, buf.length);
+                while (true) {
+                    // Receive a datagram packet from this socket
+                    socket.receive(recPacket);
+                    // Process message
+                    InetAddress senderAddr = recPacket.getAddress();
+                    int senderPort = recPacket.getPort();
+                    final String msg = new String("Receive message " + new String(buf, 0, buf.length) +
+                            " from address : " + senderAddr +
+                            ", port : " + 8080);
+                    System.out.println(msg);
+                    //UI更新
+                    Main2Activity.this.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Toast toast = Toast.makeText(Main2Activity.this,msg,Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+
+//                    // Prepare reply message
+//                    String reply = "Server reply";
+//                    // Encode this String into a sequence of bytes and store to buf.
+//                    buf = reply.getBytes();
+//                    // Construct a DatagramPacket for reply message
+//                    DatagramPacket replyPacket = new DatagramPacket(buf2, buf2.length, senderAddr, 8080);
+//                    // Send message
+//                    socket.send(replyPacket);
+                }
+
+            }catch (Exception e){
+
+            }
+        }
     }
 //    private class WorngThread extends Thread {
 //
