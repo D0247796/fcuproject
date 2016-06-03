@@ -511,6 +511,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                     final String msg = new String("Receive message " + new String(buf, 0, buf.length) +
                             " from address : " + senderAddr +
                             ", port : " + 8080);
+
                     System.out.println(msg);
                     //UI更新
                     Main2Activity.this.runOnUiThread(new Runnable() {

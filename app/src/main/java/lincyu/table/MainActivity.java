@@ -257,8 +257,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-
-
     }
     //確認接收 轉換介面 傳遞IP
     private class changeThread extends Thread {
