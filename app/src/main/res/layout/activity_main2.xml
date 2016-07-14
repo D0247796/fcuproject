@@ -10,12 +10,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="lincyu.table.Main2Activity"
-    android:background="@drawable/bround">
+    android:background="@drawable/bg">
 
 
     <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:id="@+id/frameLayout"
@@ -23,8 +23,9 @@
 
         <SurfaceView
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:id="@+id/surfaceView" />
+            android:layout_height="181dp"
+            android:id="@+id/surfaceView"
+            android:layout_gravity="center_horizontal|top" />
 
 
     </FrameLayout>
@@ -35,51 +36,58 @@
         android:id="@+id/gridLayout"
 
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/frameLayout"
-        android:layout_alignParentBottom="true">
+        android:layout_below="@+id/frameLayout">
 
         <Button
             android:layout_width="80dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:text="上"
             android:id="@+id/bt_top"
             android:layout_row="0"
             android:layout_column="1"
             android:layout_columnSpan="1"
             android:layout_columnWeight="1"
-            android:background="@drawable/buntton" />
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"
+            android:textSize="25dp" />
 
         <Button
             android:layout_width="80dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:text="左"
             android:id="@+id/bt_left"
             android:layout_row="1"
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:layout_columnSpan="1"
-            android:background="@drawable/buntton" />
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"
+            android:textSize="25dp" />
 
         <Button
             android:layout_width="80dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:text="下"
             android:id="@+id/bt_do"
             android:layout_row="2"
             android:layout_column="1"
             android:layout_columnWeight="1"
-            android:background="@drawable/buntton" />
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"
+            android:textSize="25dp" />
 
         <Button
             android:layout_width="80dp"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:text="右"
             android:id="@+id/bt_right"
             android:layout_row="1"
             android:layout_column="2"
             android:layout_columnWeight="1"
             android:layout_columnSpan="1"
-            android:background="@drawable/buntton" />
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"
+            android:textSize="25dp" />
 
     </GridLayout>
 
@@ -101,7 +109,7 @@
             android:layout_marginBottom="22dp"
             android:layout_alignBottom="@+id/View"
             android:layout_alignStart="@+id/sw_Voice"
-            android:background="#7f00ddff" />
+            android:background="#3fffffff" />
 
         <Switch
             android:layout_width="100dp"
@@ -112,23 +120,8 @@
 
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:background="#7f00ddff" />
+            android:background="#3fffffff" />
 
-        <Button
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_gravity="right"
-            android:text="錄音"
-            android:id="@+id/bt_voiceStart"
-            android:background="@drawable/buntton" />
-
-        <Button
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_gravity="right"
-            android:text="停止"
-            android:id="@+id/bt_voiceEnd"
-            android:background="@drawable/buntton" />
     </LinearLayout>
 
     <RelativeLayout
@@ -143,7 +136,9 @@
             android:text="碰撞: "
             android:id="@+id/textView"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:textColor="#ffffff"
+            android:textSize="25dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -151,7 +146,9 @@
             android:text="水位: "
             android:id="@+id/textView2"
             android:layout_centerVertical="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:textColor="#ffffff"
+            android:textSize="25dp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -159,7 +156,7 @@
             android:id="@+id/iv_collision"
             android:src="@drawable/fine"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_alignStart="@+id/iv_water" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -167,7 +164,7 @@
             android:id="@+id/iv_water"
             android:src="@drawable/fine"
             android:layout_alignTop="@+id/textView2"
-            android:layout_centerHorizontal="true" />
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
 </RelativeLayout>

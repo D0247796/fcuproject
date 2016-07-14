@@ -9,61 +9,57 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:background="@drawable/bround">
+    android:background="@drawable/bg">
 
     <EditText
 
         android:id="@+id/et_account"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="80dp"
         android:hint="請輸入IP"
         android:layout_alignParentStart="true"
-        android:background="#7f00ddff" />
-    <EditText
-
-        android:id="@+id/et_passworld"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:hint="請輸入密碼"
-        android:layout_below="@+id/et_account"
-        android:layout_alignParentStart="true"
-        android:background="#7f00ddff" />
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:textColor="#000000"
+        android:background="#3fffffff" />
 
     <Button
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:text="確定連結"
         android:id="@+id/btn_connect"
-        android:background="@drawable/buntton"
+        android:background="@drawable/btn"
         android:allowUndo="true"
+        android:textColor="#ffffff"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="連結錯誤通知"
+        android:text="狀態欄"
         android:id="@+id/tv_state"
-        android:layout_below="@+id/et_passworld"
-        android:layout_alignParentStart="true"
-        android:background="#7f00ddff"
-        android:layout_above="@+id/btn_connect" />
+        android:textAlignment="center"
+        android:background="#3fffffff"
+        android:layout_toStartOf="@+id/bt_test"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/et_account"
+        android:layout_above="@+id/tv_myIP" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="進入下一頁"
         android:id="@+id/bt_test"
-        android:layout_below="@+id/tv_state"
+        android:layout_alignParentBottom="true"
         android:layout_toStartOf="@+id/btn_connect" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="IP:"
         android:id="@+id/tv_myIP"
-        android:layout_above="@+id/btn_connect"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/btn_connect" />
 
 
 </RelativeLayout>

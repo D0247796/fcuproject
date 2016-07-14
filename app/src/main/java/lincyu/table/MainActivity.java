@@ -1,5 +1,7 @@
 package lincyu.table;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     EditText et_password,et_account;
     TextView tv_state,tv_myip;
     int connect=0;
-    Thread socketServerThread;
+    Thread TCP_SocketServerThread;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,33 +35,33 @@ public class MainActivity extends AppCompatActivity {
 //        setSupportActionBar(toolbar);
 
         btn_connect =(Button)findViewById(R.id.btn_connect);
-        et_password=(EditText)findViewById(R.id.et_passworld);
         et_account=(EditText)findViewById(R.id.et_account);
         tv_state=(TextView)findViewById(R.id.tv_state);
         tv_myip=(TextView)findViewById(R.id.tv_myIP);
         bt_test=(Button)findViewById(R.id.bt_test);
 
-        btn_connect.setOnClickListener(connectListener);
+        btn_connect.setOnClickListener(btn_connect_CL);
         bt_test.setOnClickListener(bt_test_CL);
 
-        tv_myip.setText(getIpAddress());
+//        tv_myip.setText(getIpAddress());
 
-         socketServerThread = new Thread(new SocketServerThread());
-        socketServerThread.start();
+        TCP_SocketServerThread = new Thread(new TCP_SocketServerThread());
+        TCP_SocketServerThread.start();
 
 
     }
 
     //按鈕監聽
-    private View.OnClickListener connectListener = new View.OnClickListener() {
+    private View.OnClickListener btn_connect_CL = new View.OnClickListener() {
 
         @Override
         public void onClick (View v) {
-            SocketClientThread SocketClientThread = new SocketClientThread();
-            SocketClientThread.start();
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread();
+            TCP_SocketClientThread.start();
             //沒加的話只能一次
             Thread changeThread =new Thread(new changeThread());
             changeThread.start();
+            tv_state.setText("連結中");
 
         }
     };
@@ -139,17 +141,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Server端
-    private class SocketServerThread extends Thread {
+    private class TCP_SocketServerThread extends Thread {
         String cleint_msg;
 
         @Override
         public void run() {
-            ServerSocket ss =null;
-            Socket s =null;
+            ServerSocket TCP_server_serversocket =null;
+            Socket TCP_server_socket =null;
             DataInputStream din = null;
             DataOutputStream dout =null;
             try{
-                ss= new ServerSocket(8888);
+                TCP_server_serversocket= new ServerSocket(8888);
                 System.out.println("以監聽8888阜");
             }
             catch(Exception e){
@@ -158,13 +160,11 @@ public class MainActivity extends AppCompatActivity {
             }
             while(true){
                 try{
-                    System.out.println("測試１１１１");
-                    s=ss.accept();
-                    System.out.println("測試");
-                    din = new DataInputStream(s.getInputStream());
-                    dout = new DataOutputStream(s.getOutputStream());
+                    TCP_server_socket=TCP_server_serversocket.accept();
+                    din = new DataInputStream(TCP_server_socket.getInputStream());
+                    dout = new DataOutputStream(TCP_server_socket.getOutputStream());
                     cleint_msg = din.readUTF(); //這是裡傳來的訊息
-                    dout.writeUTF("MainActivityServer");
+                    dout.writeUTF("User_startServer");
                     //UI更新
                     MainActivity.this.runOnUiThread(new Runnable() {
 
@@ -177,24 +177,22 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 catch(Exception e){
-                    System.out.println("出事拉2");
+                  e.getStackTrace();
                 }
                 finally{
                     try{
-                        System.out.println("測試222");
                         if(dout !=null){
                             dout.close();
                         }
                         if(din !=null){
                             din.close();
                         }
-                        if(s != null){
-                            s.close();
+                        if(TCP_server_socket != null){
+                            TCP_server_socket.close();
                         }
                     }
                     catch(Exception e){
                         e.printStackTrace();
-                        System.out.println("出事拉3");
                     }
                 }
             }
@@ -203,25 +201,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Client端
-    private class SocketClientThread extends Thread {
-        String server_msg,server2_msg=null;
+    private class TCP_SocketClientThread extends Thread {
+        String server_msg,server_msg2=null;
         @Override
         public void run() {
-            Socket s = null;
+            Socket TCP_client_socket = null;
             String ip="";
             ip=et_account.getText().toString();
-            DataOutputStream dout = null;
-            DataInputStream din =null;
+            DataOutputStream TCP_client_dout = null;
+            DataInputStream TCP_client_din =null;
+
             try{
-                s = new Socket(ip,8888);
-                dout = new DataOutputStream(s.getOutputStream());
-                din = new DataInputStream(s.getInputStream());
-                dout.writeUTF("Hi,Client");
-               server_msg = din.readUTF(); //這是裡傳來的訊息
-                server2_msg=server_msg;
-                if(server2_msg!=null){
+                TCP_client_socket = new Socket(ip,8888);
+                //UI更新
+                TCP_client_dout = new DataOutputStream(TCP_client_socket.getOutputStream());
+                TCP_client_din = new DataInputStream(TCP_client_socket.getInputStream());
+                TCP_client_dout.writeUTF("User_Client");
+               server_msg = TCP_client_din.readUTF(); //這是裡傳來的訊息
+                server_msg2=server_msg;
+                if(server_msg2.equals("Car_Server")){
                     connect=1;
-                    server2_msg=null;
+                    server_msg2=null;
                 }
                 //UI更新
                 MainActivity.this.runOnUiThread(new Runnable() {
@@ -235,26 +235,27 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
             }
             catch (Exception e){
                 e.getStackTrace();
             }
             finally {
                 try{
-                    if(dout !=null){
-                        dout.close();
+                    if(TCP_client_dout !=null){
+                        TCP_client_dout.close();
                     }
-                    if(din !=null){
-                        din.close();
+                    if(TCP_client_din !=null){
+                        TCP_client_din.close();
                     }
-                    if(s != null){
-                        s.close();
+                    if(TCP_client_socket != null){
+                        TCP_client_socket.close();
                     }
                 }catch (Exception e){
                     e.getStackTrace();
                 }
             }
-            
+
         }
 
     }
@@ -271,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("IP",ip);
                     startActivity(intent);
                     connect = 0;
+
                     break;
 
 

@@ -45,12 +45,11 @@ import java.net.Socket;
 
 
 public class Main2Activity extends Activity implements SurfaceHolder.Callback {
-    private ImageView ImageView_view;
+
     Button bt_up,bt_right,bt_left,bt_down;
     Switch sw_voice,sw_image;
     SurfaceHolder surfaceHolder;
     SurfaceView surfaceView1;
-    Button button1;
     ImageView iv_collision,iv_water;
     EditText et_account;
     Camera camera;
@@ -90,10 +89,10 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
         et_account=(EditText)findViewById(R.id.et_account);
         //啟動SERVER
-        Thread socketServerThread = new Thread(new SocketServerThread());
-        socketServerThread.start();
-        Thread UDP_Server = new Thread(new UDP_Server());
-        UDP_Server.start();
+        Thread TCP_SocketServerThread = new Thread(new TCP_SocketServerThread());
+        TCP_SocketServerThread.start();
+        Thread UDP_ServerThread = new Thread(new UDP_ServerThread());
+        UDP_ServerThread.start();
 //        Thread WorngThread =new Thread(new WorngThread());
 //        WorngThread.start();
 
@@ -216,6 +215,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         camera.stopPreview();
         //關閉預覽
         camera.release();
+
         //
     }
 
@@ -253,8 +253,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             String ip;
             ip=intent.getStringExtra("IP");
 
-            SocketClientThread SocketClientThread = new SocketClientThread("UP",ip);
-            SocketClientThread.start();
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("W",ip);
+            TCP_SocketClientThread.start();
 
         }
     };
@@ -267,8 +267,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             Intent intent = getIntent();
             String ip;
             ip=intent.getStringExtra("IP");
-            SocketClientThread SocketClientThread = new SocketClientThread("RIGHT",ip);
-            SocketClientThread.start();
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("Z",ip);
+            TCP_SocketClientThread.start();
 
         }
     };
@@ -281,8 +281,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             Intent intent = getIntent();
             String ip;
             ip=intent.getStringExtra("IP");
-            SocketClientThread SocketClientThread = new SocketClientThread("LEFT",ip);
-            SocketClientThread.start();
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("Y",ip);
+            TCP_SocketClientThread.start();
 
         }
     };
@@ -295,8 +295,8 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             Intent intent = getIntent();
             String ip;
             ip=intent.getStringExtra("IP");
-            SocketClientThread SocketClientThread = new SocketClientThread("DOWN",ip);
-            SocketClientThread.start();
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("X",ip);
+            TCP_SocketClientThread.start();
         }
     };
     @Override
@@ -343,7 +343,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
         return super.onOptionsItemSelected(item);
     }
     //Server端
-    private class SocketServerThread extends Thread {
+    private class TCP_SocketServerThread extends Thread {
        int cleint_msg=0;
 
         @Override
@@ -354,17 +354,13 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             DataOutputStream dout =null;
             try{
                 ss= new ServerSocket(8880);
-                System.out.println("以監聽8888阜");
             }
             catch(Exception e){
                 e.printStackTrace();
-                System.out.println("出事拉1");
             }
             while(true){
                 try{
-                    System.out.println("測試１１１１");
                     s=ss.accept();
-                    System.out.println("測試");
                     din = new DataInputStream(s.getInputStream());
                     dout = new DataOutputStream(s.getOutputStream());
                     cleint_msg = din.readInt(); //這是裡傳來的訊息
@@ -397,18 +393,14 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                     });
 
 
-
-
-
-
-                    dout.writeUTF("Ｍain2Server");
+                    dout.writeUTF("User_Server");
                 }
                 catch(Exception e){
-                    System.out.println("出事拉2");
+                    e.getStackTrace();
                 }
                 finally{
                     try{
-                        System.out.println("測試222");
+
                         if(dout !=null){
                             dout.close();
                         }
@@ -421,7 +413,6 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                     }
                     catch(Exception e){
                         e.printStackTrace();
-                        System.out.println("出事拉3");
                     }
                 }
             }
@@ -430,10 +421,10 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
     }
 
     //Client端
-    private class SocketClientThread extends Thread {
+    private class TCP_SocketClientThread extends Thread {
         String server_msg,msg,ip;
 
-        public SocketClientThread(String msg,String ip){
+        public TCP_SocketClientThread(String msg,String ip){
             this.msg=msg;
             this.ip=ip;
         }
@@ -488,7 +479,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
 
     }
     //UDP
-    public class UDP_Server extends Thread{
+    public class UDP_ServerThread extends Thread{
         public void run(){
             int		port = 8080;
             byte []	buf = new byte[1000];
