@@ -13,6 +13,11 @@
         android:title="現在溫濕"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_note"
+        android:orderInCategory="100"
+        android:title="筆記本"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_exit"
         android:orderInCategory="100"
         android:title="結束程式"

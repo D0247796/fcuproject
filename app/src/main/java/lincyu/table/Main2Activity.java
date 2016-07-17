@@ -253,7 +253,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             String ip;
             ip=intent.getStringExtra("IP");
 
-            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("W",ip);
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("F",ip);
             TCP_SocketClientThread.start();
 
         }
@@ -267,7 +267,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             Intent intent = getIntent();
             String ip;
             ip=intent.getStringExtra("IP");
-            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("Z",ip);
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("R",ip);
             TCP_SocketClientThread.start();
 
         }
@@ -281,7 +281,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             Intent intent = getIntent();
             String ip;
             ip=intent.getStringExtra("IP");
-            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("Y",ip);
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("L",ip);
             TCP_SocketClientThread.start();
 
         }
@@ -295,7 +295,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             Intent intent = getIntent();
             String ip;
             ip=intent.getStringExtra("IP");
-            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("X",ip);
+            TCP_SocketClientThread TCP_SocketClientThread = new TCP_SocketClientThread("B",ip);
             TCP_SocketClientThread.start();
         }
     };
@@ -327,9 +327,19 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                 ad.show();
                 break;
 
-
-
             case R.id.action_exit:
+
+
+                break;
+
+            case R.id.action_note:
+                Intent intent2 = getIntent();
+                String ip;
+                ip=intent2.getStringExtra("IP");
+                Intent intent = new Intent();
+                intent.setClass(Main2Activity.this,Note.class);
+                intent.putExtra("IP",ip);
+                startActivity(intent);
 
 
                 break;
@@ -515,14 +525,7 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
                         }
                     });
 
-//                    // Prepare reply message
-//                    String reply = "Server reply";
-//                    // Encode this String into a sequence of bytes and store to buf.
-//                    buf = reply.getBytes();
-//                    // Construct a DatagramPacket for reply message
-//                    DatagramPacket replyPacket = new DatagramPacket(buf2, buf2.length, senderAddr, 8080);
-//                    // Send message
-//                    socket.send(replyPacket);
+
                 }
 
             }catch (Exception e){
@@ -530,60 +533,5 @@ public class Main2Activity extends Activity implements SurfaceHolder.Callback {
             }
         }
     }
-//    private class WorngThread extends Thread {
-//
-//        @Override
-//        public void run() {
-//            while(true) {
-//
-//                if (worng1 == 1){
-//                    //UI更新
-//                    Main2Activity.this.runOnUiThread(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            iv_collision.setImageResource(R.drawable.error);
-//
-//                        }
-//                    });
-//
-//
-//                }
-//                if (worng2 == 1){
-//                    Main2Activity.this.runOnUiThread(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            iv_water.setImageResource(R.drawable.error);
-//
-//                        }
-//                    });
-//
-//                }
-//                if (worng1 ==0 ){
-//                    Main2Activity.this.runOnUiThread(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            iv_collision.setImageResource(R.drawable.fine);
-//
-//                        }
-//                    });
-//
-//                }
-//                if (worng2 == 0){
-//                    Main2Activity.this.runOnUiThread(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            iv_water.setImageResource(R.drawable.fine);
-//
-//                        }
-//                    });
-//
-//
-//                }
-//            }
-//        }
-//    }
+
 }
